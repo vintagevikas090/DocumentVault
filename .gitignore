@@ -1,0 +1,27 @@
+# Python environment files
+.venv/
+venv/
+ENV/
+env/
+bin/
+lib/
+include/
+
+# Python compiled cache
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Project-specific private data
+# Keep the folder structure, but ignore the actual files inside
+data/doc_inventory.db
+data/backups/
+data/*.csv
+
+# Streamlit logs/config (optional)
+.streamlit/crash_report_*.txt
