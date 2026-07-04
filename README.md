@@ -5,6 +5,15 @@ A **privacy-first, fully offline** personal document organizer and management sy
 > [!IMPORTANT]
 > **100% Offline & Private:** This application operates entirely on local threads. It makes no external API calls, sets no cookies, and performs no data tracking. Your documents remain in their original paths on your system—only indexing metadata is saved locally.
 
+
+---
+
+## 🎥 Demo
+
+Check out the walk-through demo video of the Streamlit dashboard:  
+👉 **[Watch Demo Video](assets/demo.mp4)**
+
+
 ---
 
 ## ✨ Key Features
@@ -18,13 +27,6 @@ A **privacy-first, fully offline** personal document organizer and management sy
     *   **Export Spreadsheets:** Instant export of your organized document catalog to a `.csv` file.
     *   **Backup Database:** Create local, compressed `.zip` database backups in one click.
     *   **Danger Zone:** Easily wipe the indexed database clean when you need a fresh start.
-
----
-
-## 🎥 Demo
-
-Check out the walk-through demo video of the Streamlit dashboard:  
-👉 **[Watch Demo Video](assets/demo.mp4)**
 
 ---
 
