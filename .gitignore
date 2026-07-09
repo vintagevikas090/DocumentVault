@@ -22,6 +22,8 @@ Thumbs.db
 data/doc_inventory.db
 data/backups/
 data/*.csv
+data/vault/
+data/
 
 # Streamlit logs/config (optional)
 .streamlit/crash_report_*.txt

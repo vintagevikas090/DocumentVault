@@ -1,9 +1,9 @@
 # 📁 DocumentVault
 
-A **privacy-first, fully offline** personal document organizer and management system. Built with Python and Streamlit, it scans your local directories, automatically categorizes files using a rule-based engine, eliminates duplicate storage bloat using smart chunked file hashing, and generates CSV inventories as well as database backups.
+A **privacy-first, fully offline** personal document organizer and management system. Built with Python and Streamlit, it scans your local directories, physically copies or moves files into a centralized category-structured vault folder (`Organized_Data`), eliminates duplicate storage bloat using smart chunked file hashing, and generates CSV inventories as well as database backups.
 
 > [!IMPORTANT]
-> **100% Offline & Private:** This application operates entirely on local threads. It makes no external API calls, sets no cookies, and performs no data tracking. Your documents remain in their original paths on your system—only indexing metadata is saved locally.
+> **100% Offline & Private:** This application operates entirely on local threads. It makes no external API calls, sets no cookies, and performs no data tracking. Your documents are safely organized inside a centralized `Organized_Data` vault folder (either copied or moved) structured by their categories, with only indexing metadata saved in a local database.
 
 
 ---
@@ -13,16 +13,25 @@ A **privacy-first, fully offline** personal document organizer and management sy
 Check out the walk-through demo video of the Streamlit dashboard:  
 👉 **[Watch Demo Video](assets/demo.mp4)**
 
+### 📸 Screenshots
+
+| | |
+| --- | --- |
+| **Import Documents (Add Documents)** <br> ![Import Documents](assets/image%201.png) | **Dashboard (Metrics & Analytics)** <br> ![Dashboard Overview](assets/image%202.png) |
+| **Search & Filtering Documents** <br> ![Search and Filter](assets/image%203.png) | **Data & Database Management** <br> ![Data Management](assets/image%204.png) |
+
+
 
 ---
 
 ## ✨ Key Features
 
-*   **⚡ Fast Streamlit Web UI:** A modern, interactive multi-tab dashboard for organizing, filtering, and searching files.
-*   **🛡️ Secure File Deduplication:** Avoids duplicate storage bloat. Uses a memory-efficient `SHA-256` hashing scanner that reads files in small chunks (preventing RAM crashes even on multi-GB files).
-*   **📂 Auto-Categorization:** Built-in keyword and rules engine tailored for standard documents (Govt IDs like Aadhaar/PAN, Education degree sheets, Finance statement/invoices, Medical records, Code scripts, and more).
-*   **📦 ZIP Import & Scan:** Drag-and-drop a `.zip` archive directly into the dashboard. It extracts and indexes the files automatically.
-*   **🛡️ Database Restore:** Upload a previously saved backup `.zip` file under the "Import Documents" tab to instantly restore your entire organized history.
+*   **⚡ Modern Sidebar UI:** A clean, sidebar-navigation dashboard for organizing, filtering, searching, and managing your vault.
+*   **📁 Category-Structured Vault:** Automatically organizes documents physically into a `Organized_Data` folder with subfolders for each category (e.g. `Government & Identity`, `Education`, `Finance`).
+*   **🔄 Copy or Move Modes:** Supports both safe copy mode (leaving originals in place) and move mode (deleting empty directories and cleaning up source folders after the move).
+*   **🛡️ Secure File Deduplication:** Avoids duplicate storage bloat. Uses a memory-efficient `SHA-256` hashing scanner that reads files in small chunks (preventing RAM crashes even on multi-GB files). Naming conflicts in the vault are automatically resolved by appending unique short-hash suffixes.
+*   **📦 ZIP Import & Scan:** Drag-and-drop a `.zip` archive directly into the dashboard. It extracts and indexes the files into the vault automatically.
+*   **🛡️ Database Restore:** Upload a previously saved backup `.zip` file under the "Add Documents" tab to instantly restore your entire organized history.
 *   **📤 Local backups & Exports:**
     *   **Export Spreadsheets:** Instant export of your organized document catalog to a `.csv` file.
     *   **Backup Database:** Create local, compressed `.zip` database backups in one click.
@@ -53,6 +62,8 @@ The directory structure is organized as follows:
 ```text
 DocumentVault/
 ├── data/                     
+│   ├── doc_inventory.db      # SQLite inventory database
+│   └── Organized_Data/       # Centralized category-structured document vault
 ├── src/                      
 │   ├── categorizer.py        
 │   ├── database.py           

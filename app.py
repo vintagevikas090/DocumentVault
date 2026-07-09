@@ -39,14 +39,29 @@ def get_cached_csv_data(db_path, mtime):
     except Exception:
         return b""
 
-st.title("📁 DocumentVault")
-st.markdown("A privacy-first, offline document management system.")
+with st.sidebar:
+    st.title("📁 DocumentVault")
+    st.markdown("A privacy-first, offline document management system.")
+    st.divider()
+    page = st.radio(
+        "Navigation",
+        ["📥 Add Documents", "📊 Dashboard", "⚙️ Data Management"]
+    )
 
-
-tab_scan, tab_dash, tab_manage = st.tabs(["📥 Add Documents", "📊 Dashboard", "⚙️ Data Management"])
-
-with tab_scan:
+if page == "📥 Add Documents":
     st.header("Import Documents")
+    
+    with st.expander("⚙️ Vault Settings", expanded=False):
+        col_v1, col_v2 = st.columns(2)
+        with col_v1:
+            vault_dir = st.text_input("Vault Storage Location", value="data/Organized_Data", help="All scanned and categorized files will be moved/copied here.")
+            if not vault_dir.strip():
+                vault_dir = "data/Organized_Data"
+        with col_v2:
+            delete_originals = st.checkbox("Delete original files after scanning", value=False, help="WARNING: If checked, the files in the scanned folders will be moved (deleted from original location) to the vault. Otherwise they will be copied.")
+            
+    st.divider()
+    
     col_scan, col_zip, col_restore = st.columns(3, gap="large")
     
     with col_scan:
@@ -66,9 +81,16 @@ with tab_scan:
         if st.button("🚀 Start Scan", type="primary", use_container_width=True):
             if os.path.exists(st.session_state.scan_path):
                 with st.spinner("Scanning directory..."):
-                    scanner = DocumentScanner(db)
+                    # If vault_dir is default ('data/Organized_Data'), we use the parent of scan_path / 'Organized_Data'
+                    if vault_dir == "data/Organized_Data":
+                        base_path = os.path.dirname(os.path.abspath(st.session_state.scan_path))
+                        actual_vault = os.path.normpath(os.path.join(base_path, "Organized_Data")).replace('\\', '/')
+                    else:
+                        actual_vault = os.path.normpath(vault_dir).replace('\\', '/')
+                    
+                    scanner = DocumentScanner(db, vault_dir=actual_vault, delete_originals=delete_originals)
                     scanner.scan_directory(st.session_state.scan_path)
-                st.success("Scan completed successfully!")
+                st.success(f"Scan completed successfully! Organized folder created at: **{actual_vault}**")
                 st.cache_data.clear()
             else:
                 st.error("Directory does not exist. Please check the path.")
@@ -89,10 +111,11 @@ with tab_scan:
                         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                             zip_ref.extractall(tmpdir)
                         
-                        scanner = DocumentScanner(db)
+                        actual_vault = os.path.normpath(vault_dir).replace('\\', '/')
+                        scanner = DocumentScanner(db, vault_dir=actual_vault, delete_originals=delete_originals)
                         scanner.scan_directory(tmpdir)
                     
-                st.success("ZIP processed successfully!")
+                st.success(f"ZIP processed successfully! Files saved to: **{actual_vault}**")
                 st.cache_data.clear()
 
     with col_restore:
@@ -109,16 +132,17 @@ with tab_scan:
                                 st.error("Invalid backup file. The ZIP file must contain 'doc_inventory.db'.")
                             else:
                                 db_data = z.read("doc_inventory.db")
-                                os.makedirs(os.path.dirname(db.db_path), exist_ok=True)
-                                with open(db.db_path, "wb") as f:
+                                target_db_path = os.path.normpath(db.db_path).replace('\\', '/')
+                                os.makedirs(os.path.dirname(target_db_path), exist_ok=True)
+                                with open(target_db_path, "wb") as f:
                                     f.write(db_data)
-                                st.success("Database restored successfully!")
+                                st.success(f"Database restored successfully to: **{target_db_path}**")
                                 st.cache_data.clear()
                                 st.rerun()
                     except Exception as e:
                         st.error(f"Failed to restore database backup: {e}")
 
-with tab_dash:
+elif page == "📊 Dashboard":
     documents = db.get_all_documents()
     if documents:
         df = pd.DataFrame(documents)
@@ -156,6 +180,10 @@ with tab_dash:
         with dash_table:
             display_df = filtered_df[['id', 'filename', 'category', 'added_date', 'file_size', 'original_path']].copy()
             display_df['file_size'] = (display_df['file_size'] / 1024).round(2).astype(str) + " KB"
+            try:
+                display_df['added_date'] = pd.to_datetime(display_df['added_date']).dt.strftime('%Y-%m-%d %H:%M:%S')
+            except Exception:
+                pass
             st.dataframe(display_df, use_container_width=True, hide_index=True)
             
         with dash_chart:
@@ -166,7 +194,7 @@ with tab_dash:
     else:
         st.info("No documents found in the database. Go to the **Add Documents** tab to get started!")
 
-with tab_manage:
+elif page == "⚙️ Data Management":
     st.header("Export & Database Management")
     exporter = Exporter(db)
     
