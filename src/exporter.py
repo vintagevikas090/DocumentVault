@@ -10,7 +10,7 @@ class Exporter:
         self.db = db_manager
 
     def export_inventory_csv(self, output_file: str = "document_inventory.csv") -> str:
-        documents = self.db.get_all_documents()
+        documents = self.db.get_all_documents() # gives list of dicts
         
         if not documents:
             return "No documents in database to export."
@@ -45,18 +45,4 @@ class Exporter:
         except Exception as e:
             return f"Failed to create backup: {e}"
 
-    def get_database_backup_bytes(self) -> bytes:
-        import io
-        db_path = self.db.db_path
-        if not os.path.exists(db_path):
-            return b""
-            
-        buffer = io.BytesIO()
-        try:
-            with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
-                zipf.write(db_path, os.path.basename(db_path))
-            return buffer.getvalue()
-        except Exception as e:
-            print(f"Failed to create in-memory backup bytes: {e}")
-            return b""
 
