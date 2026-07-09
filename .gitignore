@@ -24,6 +24,7 @@ data/backups/
 data/*.csv
 data/vault/
 data/
+data/Organized_Data/
 
 # Streamlit logs/config (optional)
 .streamlit/crash_report_*.txt
